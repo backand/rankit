@@ -1,5 +1,6 @@
 get_rank/node_modules
 get_rank/.serverless
+get_rank/.env
 
 screenshot_capture/node_modules
 screenshot_capture/.serverless
