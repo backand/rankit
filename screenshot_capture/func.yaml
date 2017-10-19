@@ -1,0 +1,4 @@
+name: rankit1-dev-screenshot
+version: 0.0.6
+runtime: lambda-nodejs4.3
+cmd: index.screenshot

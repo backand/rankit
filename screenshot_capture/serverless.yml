@@ -1,0 +1,12 @@
+service: rankit1
+
+provider:
+  name: aws
+  runtime: nodejs4.3
+  region: eu-central-1
+
+functions:
+  screenshot:
+    handler: index.screenshot
+    timeout: 60
+

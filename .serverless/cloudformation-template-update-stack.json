@@ -1,0 +1,198 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "The AWS CloudFormation template for this Serverless application",
+  "Resources": {
+    "ServerlessDeploymentBucket": {
+      "Type": "AWS::S3::Bucket"
+    },
+    "ScreenshotLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/rankit-dev-screenshot"
+      }
+    },
+    "GetRankLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/rankit-dev-getRank"
+      }
+    },
+    "IamRoleLambdaExecution": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "lambda.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ]
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": {
+              "Fn::Join": [
+                "-",
+                [
+                  "dev",
+                  "rankit",
+                  "lambda"
+                ]
+              ]
+            },
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:CreateLogStream"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/rankit-dev-screenshot:*"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/rankit-dev-getRank:*"
+                    }
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:PutLogEvents"
+                  ],
+                  "Resource": [
+                    {
+                      "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/rankit-dev-screenshot:*:*"
+                    },
+                    {
+                      "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/rankit-dev-getRank:*:*"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "Path": "/",
+        "RoleName": {
+          "Fn::Join": [
+            "-",
+            [
+              "rankit",
+              "dev",
+              "eu-central-1",
+              "lambdaRole"
+            ]
+          ]
+        }
+      }
+    },
+    "ScreenshotLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/rankit/dev/1508414836525-2017-10-19T12:07:16.525Z/rankit.zip"
+        },
+        "FunctionName": "rankit-dev-screenshot",
+        "Handler": "index.screenshot",
+        "MemorySize": 1024,
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs4.3",
+        "Timeout": 60
+      },
+      "DependsOn": [
+        "ScreenshotLogGroup",
+        "IamRoleLambdaExecution"
+      ]
+    },
+    "ScreenshotLambdaVersionQ7omZbv3wIyAwDtkOVqQFRev7zxgfqe0au96Mvu1A0": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "ScreenshotLambdaFunction"
+        },
+        "CodeSha256": "Q7omZbv3wIy/AwDtkOVqQFRev7zxgfqe0au96Mvu1A0="
+      }
+    },
+    "GetRankLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/rankit/dev/1508414836525-2017-10-19T12:07:16.525Z/rankit.zip"
+        },
+        "FunctionName": "rankit-dev-getRank",
+        "Handler": "index.get_rank",
+        "MemorySize": 1024,
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs4.3",
+        "Timeout": 60,
+        "Environment": {
+          "Variables": {
+            "key": "AKIAI62ZWGATW2WSBEOQ",
+            "secret": "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"
+          }
+        }
+      },
+      "DependsOn": [
+        "GetRankLogGroup",
+        "IamRoleLambdaExecution"
+      ]
+    },
+    "GetRankLambdaVersionQ7omZbv3wIyAwDtkOVqQFRev7zxgfqe0au96Mvu1A0": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "GetRankLambdaFunction"
+        },
+        "CodeSha256": "Q7omZbv3wIy/AwDtkOVqQFRev7zxgfqe0au96Mvu1A0="
+      }
+    }
+  },
+  "Outputs": {
+    "ServerlessDeploymentBucketName": {
+      "Value": {
+        "Ref": "ServerlessDeploymentBucket"
+      }
+    },
+    "ScreenshotLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "ScreenshotLambdaVersionQ7omZbv3wIyAwDtkOVqQFRev7zxgfqe0au96Mvu1A0"
+      }
+    },
+    "GetRankLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "GetRankLambdaVersionQ7omZbv3wIyAwDtkOVqQFRev7zxgfqe0au96Mvu1A0"
+      }
+    }
+  }
+}
