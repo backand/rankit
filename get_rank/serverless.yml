@@ -9,6 +9,3 @@ functions:
   get-rank:
     handler: index.get_rank
     timeout: 60
-    environment:
-      key: AKIAI62ZWGATW2WSBEOQ
-      secret: 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
